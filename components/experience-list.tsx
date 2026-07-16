@@ -35,6 +35,30 @@ type DescriptionSegment =
   | { text: string; href: string }
   | { text: string; image: Media };
 
+// The SE webring mark, drawn in currentColor so it picks up the role link's
+// muted tone and accent hover in both themes. Upstream ships it as fixed
+// black/white fills (simcard0000/se-webring, assets/logo); the path is theirs,
+// the viewBox is tightened to the glyph so it sits on the text baseline
+// without the artwork's built-in padding.
+function WebringMark() {
+  return (
+    <svg
+      width="14"
+      height="9.7"
+      viewBox="91 210 778 540"
+      fill="currentColor"
+      aria-hidden="true"
+      className="inline-block align-baseline ml-1 translate-y-[0.5px]"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M390.499 272.146V687.477C491.737 672.742 569.501 585.38 569.501 479.811C569.501 374.243 491.737 286.881 390.499 272.146ZM367.396 749.527C364.991 749.591 362.577 749.623 360.157 749.623C211.506 749.623 91 628.824 91 479.811C91 330.799 211.506 210 360.157 210C362.577 210 364.991 210.032 367.396 210.096C368.31 210.032 369.233 210 370.163 210H869V749.623H370.163C369.233 749.623 368.31 749.591 367.396 749.527ZM330.687 687.602V272.021C229.023 286.379 150.813 373.94 150.813 479.811C150.813 585.683 229.023 673.244 330.687 687.602ZM529.346 269.958H809.187V689.665H529.346C590.325 640.201 629.313 564.57 629.313 479.811C629.313 395.053 590.325 319.422 529.346 269.958Z"
+      />
+    </svg>
+  );
+}
+
 // The inline controls are atomic inline-blocks, so a following "." is free to
 // wrap onto a line of its own. Punctuation that trails a control is rendered
 // alongside it instead, and trimmed from the text segment that follows.
@@ -264,9 +288,10 @@ export function ExperienceList() {
                       href={exp.roleUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="no-underline text-inherit hover:text-accent transition-colors"
+                      className="no-underline text-inherit hover:text-accent transition-colors whitespace-nowrap"
                     >
                       {exp.role}
+                      <WebringMark />
                     </a>
                   ) : (
                     exp.role
