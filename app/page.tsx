@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ExperienceList } from "@/components/experience-list";
 import { PanelVideo } from "@/components/panel-video";
@@ -10,6 +10,7 @@ import {
   UnderlineBars,
 } from "@/components/scramble-link";
 import { Controls } from "@/components/controls";
+import { prefetchVideos, useIdle } from "@/lib/prefetch";
 import { playHover } from "@/lib/sound";
 
 import beijing from "@/public/panels/beijing.jpg";
@@ -40,6 +41,7 @@ const panels = {
   },
   smartHomes: {
     video: "/panels/iot-door.mp4",
+    videoAv1: "/panels/iot-door-av1.mp4",
     poster: iotDoorPoster,
     alt: "A bedroom door swinging itself open, pulled by a motor I built and mounted at its base",
   },
@@ -86,6 +88,46 @@ function PanelMedia({ panel }: { panel: PanelContent }) {
       sizes={portrait ? "240px" : "280px"}
       className={portrait ? PORTRAIT_PANEL : LANDSCAPE_PANEL}
     />
+  );
+}
+
+// Panels only mount on hover, so a fresh visitor pays the whole network
+// round-trip at the moment of the reveal — the image pops in a beat after
+// the scramble. Fetching every panel's media once the page goes idle means
+// the reveal reads from cache instead. Hidden copies request the exact
+// same optimized URLs as PanelMedia (same sizes attribute), and eager
+// loading is what makes a display:none image fetch at all.
+function PrefetchPanelMedia() {
+  const idle = useIdle();
+
+  useEffect(() => {
+    if (!idle) return;
+    prefetchVideos(
+      Object.values(panels).flatMap((p) => ("video" in p ? p : [])),
+    );
+  }, [idle]);
+
+  if (!idle) return null;
+
+  return (
+    <div className="hidden" aria-hidden="true">
+      {Object.entries(panels).map(([key, panel]) =>
+        "video" in panel ? (
+          // Just the poster — that's what shows instantly; the clip streams.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img key={key} src={panel.poster.src} alt="" />
+        ) : (
+          <Image
+            key={key}
+            src={panel.image}
+            alt=""
+            loading="eager"
+            fetchPriority="low"
+            sizes={panel.image.height > panel.image.width ? "240px" : "280px"}
+          />
+        ),
+      )}
+    </div>
   );
 }
 
@@ -209,6 +251,7 @@ export default function Home() {
       </section>
 
       <ExperienceList />
+      <PrefetchPanelMedia />
     </div>
   );
 }

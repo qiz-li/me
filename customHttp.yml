@@ -1,0 +1,15 @@
+# Headers applied by Amplify Hosting itself. Files in /public are served by
+# the hosting layer without touching the Next server, so the headers() rule
+# in next.config.ts (which covers local/self-hosted serving) never runs for
+# them in production — this file is what does.
+customHeaders:
+  # Immutable is a promise: replacing a clip means renaming the file.
+  - pattern: "**/*.mp4"
+    headers:
+      - key: Cache-Control
+        value: public, max-age=31536000, immutable
+  # Social-preview image; replaced in place if redesigned, so only a day.
+  - pattern: "/og.png"
+    headers:
+      - key: Cache-Control
+        value: public, max-age=86400

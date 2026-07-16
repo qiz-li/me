@@ -1,9 +1,10 @@
 "use client";
 
 import Image, { type StaticImageData } from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { PanelVideo, type VideoMedia } from "@/components/panel-video";
+import { prefetchVideos, useIdle } from "@/lib/prefetch";
 import { ScrambleButton, ScrambleInline, ScrambleInlineLink } from "@/components/scramble-link";
 import aruba from "@/public/experience/aruba.jpg";
 import bdo from "@/public/experience/bdo.jpg";
@@ -21,6 +22,7 @@ import waterloo from "@/public/experience/waterloo-campus.jpg";
 
 const seEvents: VideoMedia = {
   video: "/experience/se-events.mp4",
+  videoAv1: "/experience/se-events-av1.mp4",
   poster: seEventsPoster,
 };
 
@@ -148,14 +150,19 @@ const experiences: Experience[] = [
   },
 ];
 
+// These photos are the page's body content, so none of them load lazily:
+// the first (likely LCP) is preloaded from the head, and the rest fetch
+// eagerly at low priority — the browser gets them right after the critical
+// assets instead of waiting for the viewport to reach each one, which is
+// what made them pop in on scroll.
 function ExperienceMedia({
   media,
   alt,
-  priority,
+  preload,
 }: {
   media: Media;
   alt: string;
-  priority: boolean;
+  preload: boolean;
 }) {
   const className = "w-full h-auto rounded-[2px]";
 
@@ -169,9 +176,60 @@ function ExperienceMedia({
       alt={alt}
       placeholder="blur"
       sizes="(min-width: 1024px) 420px, 440px"
-      priority={priority}
+      preload={preload}
+      {...(preload ? {} : { loading: "eager", fetchPriority: "low" })}
       className={className}
     />
+  );
+}
+
+// Reveal media only mounts when its word is hovered, which used to make the
+// swap wait on the network right under the cursor. Once the page goes idle,
+// fetch every description's stills and clips into cache — hidden copies
+// request the exact optimized URLs ExperienceMedia will ask for (same sizes
+// attribute), so any reveal paints instantly.
+function PrefetchDescriptionMedia() {
+  const idle = useIdle();
+
+  useEffect(() => {
+    if (!idle) return;
+    prefetchVideos(
+      experiences.flatMap((exp) =>
+        exp.description
+          .flat()
+          .flatMap((seg) =>
+            typeof seg === "object" && "image" in seg && "video" in seg.image
+              ? seg.image
+              : [],
+          ),
+      ),
+    );
+  }, [idle]);
+
+  if (!idle) return null;
+
+  return (
+    <div className="hidden" aria-hidden="true">
+      {experiences.flatMap((exp) =>
+        exp.description.flat().map((segment, i) => {
+          if (typeof segment !== "object" || !("image" in segment)) return null;
+          const media = segment.image;
+          return "video" in media ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={`${exp.company}-${i}`} src={media.poster.src} alt="" />
+          ) : (
+            <Image
+              key={`${exp.company}-${i}`}
+              src={media}
+              alt=""
+              loading="eager"
+              fetchPriority="low"
+              sizes="(min-width: 1024px) 420px, 440px"
+            />
+          );
+        }),
+      )}
+    </div>
   );
 }
 
@@ -187,6 +245,7 @@ export function ExperienceList() {
   const [pinnedImage, setPinnedImage] = useState<Media | null>(null);
   const [hoverImage, setHoverImage] = useState<Media | null>(null);
   const imageOverride = shownExpanded === expanded ? (hoverImage ?? pinnedImage) : null;
+
 
   return (
     <div className="flex flex-col gap-16">
@@ -221,7 +280,7 @@ export function ExperienceList() {
                 (shownExpanded === exp.company && imageOverride) || exp.image
               }
               alt={exp.company}
-              priority={i === 0}
+              preload={i === 0}
             />
             <ScrambleButton
               text={exp.caption}
@@ -296,6 +355,7 @@ export function ExperienceList() {
           )}
         </article>
       ))}
+      <PrefetchDescriptionMedia />
     </div>
   );
 }

@@ -3,7 +3,13 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { StaticImageData } from "next/image";
 
-export type VideoMedia = { video: string; poster: StaticImageData };
+import { pickClipSource } from "@/lib/prefetch";
+
+export type VideoMedia = {
+  video: string;
+  videoAv1?: string;
+  poster: StaticImageData;
+};
 
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 
@@ -24,6 +30,7 @@ export function useReducedMotion() {
 // and gets controls instead.
 export function PanelVideo({
   video,
+  videoAv1,
   poster,
   alt,
   className,
@@ -43,7 +50,7 @@ export function PanelVideo({
   return (
     <video
       ref={ref}
-      src={video}
+      src={pickClipSource({ video, videoAv1 })}
       poster={poster.src}
       aria-label={alt}
       muted
