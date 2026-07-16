@@ -11,6 +11,9 @@
   --foreground: #343c3c;
   --muted: #5e6666;
   --accent: #8b2942;
+  /* Hover tone: same as the accent in light, lifted in dark where the
+     accent sits close to the background and needs the extra light. */
+  --accent-hover: #8b2942;
   --on-accent: #ffffff;
 }
 
@@ -20,6 +23,7 @@
   --foreground: #ffffff;
   --muted: #a89494;
   --accent: #8f3c4e;
+  --accent-hover: #b75268;
   --on-accent: #ffffff;
 }
 
@@ -28,6 +32,7 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --font-sans: var(--font-inter);
 }
 
@@ -59,7 +64,7 @@
   }
 
   a:hover {
-    color: var(--accent);
+    color: var(--accent-hover);
   }
 
   h1, h2, h3, h4, h5, h6 {

@@ -20,7 +20,7 @@ export function SoundToggle() {
       onFocus={playHover}
       aria-pressed={muted}
       aria-label={muted ? "Unmute interface sounds" : "Mute interface sounds"}
-      className="text-muted hover:text-accent transition-colors duration-150 flex items-center"
+      className="text-muted hover:text-accent-hover transition-colors duration-150 flex items-center"
     >
       <svg
         width="14"

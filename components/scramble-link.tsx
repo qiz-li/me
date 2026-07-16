@@ -182,7 +182,7 @@ export function ScrambleButton({
       onFocus={handleEnter}
       onBlur={handleLeave}
       aria-expanded={expanded}
-      className={`group inline-flex items-center gap-1.5 self-start hover:text-accent transition-colors ${expanded ? "text-accent" : muted ? "text-muted" : ""} ${className}`}
+      className={`group inline-flex items-center gap-1.5 self-start hover:text-accent-hover transition-colors ${expanded ? "text-accent" : muted ? "text-muted" : ""} ${className}`}
     >
       <ArrowLabel
         text={text}
@@ -217,7 +217,7 @@ export function ScrambleInlineLink({
       onMouseLeave={stop}
       onFocus={run}
       onBlur={stop}
-      className={`group no-underline text-inherit hover:text-accent transition-colors ${plain ? "inline-block" : "inline-flex items-center gap-1.5 mr-1"}`}
+      className={`group no-underline text-inherit hover:text-accent-hover transition-colors ${plain ? "inline-block" : "inline-flex items-center gap-1.5 mr-1"}`}
     >
       {plain ? (
         <ScrambleText text={text} display={display}>
@@ -265,7 +265,7 @@ export function ScrambleInline({
       onFocus={handleEnter}
       onBlur={handleLeave}
       aria-expanded={active}
-      className={`group inline-block hover:text-accent transition-colors ${active ? "text-accent" : ""}`}
+      className={`group inline-block hover:text-accent-hover transition-colors ${active ? "text-accent" : ""}`}
     >
       <ScrambleText text={text} display={display}>
         <UnderlineBars filled={active} />

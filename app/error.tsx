@@ -11,7 +11,7 @@ export default function Error({ reset }: { reset: () => void }) {
         <button
           type="button"
           onClick={reset}
-          className="underline underline-offset-2 hover:text-accent transition-colors"
+          className="underline underline-offset-2 hover:text-accent-hover transition-colors"
         >
           Try again
         </button>

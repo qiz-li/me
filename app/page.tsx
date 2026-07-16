@@ -235,7 +235,7 @@ export default function Home() {
                         : { target: "_blank", rel: "noopener noreferrer" })}
                       onMouseEnter={playHover}
                       onFocus={playHover}
-                      className="group relative no-underline hover:text-accent transition-colors"
+                      className="group relative no-underline hover:text-accent-hover transition-colors"
                     >
                       {label}
                       <UnderlineBars />

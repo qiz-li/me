@@ -16,7 +16,7 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       onMouseEnter={playHover}
       onFocus={playHover}
-      className="text-muted hover:text-accent transition-colors duration-150 flex items-center"
+      className="text-muted hover:text-accent-hover transition-colors duration-150 flex items-center"
       aria-label="Toggle theme"
     >
       <svg

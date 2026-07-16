@@ -278,7 +278,7 @@ export function ExperienceList() {
           <div className="flex flex-col gap-2">
             <div className="flex items-baseline justify-between">
               <div>
-                <a href={exp.url} target="_blank" rel="noopener noreferrer" className="no-underline hover:text-accent transition-colors">{exp.company}</a>
+                <a href={exp.url} target="_blank" rel="noopener noreferrer" className="no-underline hover:text-accent-hover transition-colors">{exp.company}</a>
                 <span className="text-muted">
                   {", "}
                   {exp.roleUrl ? (
@@ -288,7 +288,7 @@ export function ExperienceList() {
                       href={exp.roleUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="no-underline text-inherit hover:text-accent transition-colors whitespace-nowrap"
+                      className="no-underline text-inherit hover:text-accent-hover transition-colors whitespace-nowrap"
                     >
                       {exp.role}
                       <WebringMark />
