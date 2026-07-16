@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* color-scheme rides along with the palette so native UI the page never
+   paints itself — scrollbars, and the video controls PanelVideo falls back
+   to — follows the theme instead of staying light on a dark page. */
+:root {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #343c3c;
+  --muted: #5e6666;
+  --accent: #8b2942;
+  --on-accent: #ffffff;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #171214;
+  --foreground: #ffffff;
+  --muted: #a89494;
+  --accent: #8f3c4e;
+  --on-accent: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-inter);
+}
+
+@layer base {
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--on-accent);
+  }
+
+  .dark ::selection {
+    background-color: #8b2942;
+  }
+
+
+  a {
+    color: var(--foreground);
+    text-decoration-line: underline;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+    transition: color 0.15s ease;
+  }
+
+  a:hover {
+    color: var(--accent);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 500;
+    line-height: 1.3;
+  }
+}
+
+@utility accent-serif {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+}
