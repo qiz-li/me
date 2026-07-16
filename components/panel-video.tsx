@@ -52,6 +52,11 @@ export function PanelVideo({
       ref={ref}
       src={pickClipSource({ video, videoAv1 })}
       poster={poster.src}
+      // Until metadata arrives, a <video> has no intrinsic size and the
+      // browser lays it out at the default 2:1 — shorter than the media it
+      // replaces, so the page below jumps for a frame or two on the first
+      // reveal. The poster's dimensions pin the box from the start.
+      style={{ aspectRatio: `${poster.width} / ${poster.height}` }}
       aria-label={alt}
       muted
       loop
