@@ -132,7 +132,7 @@ function PrefetchPanelMedia() {
 }
 
 const contactLinks = [
-  { label: "q74li@uwaterloo.ca", href: "mailto:q74li@uwaterloo.ca" },
+  { label: "nathanliqz@gmail.com", href: "mailto:nathanliqz@gmail.com" },
   { label: "x.com/nli24_", href: "https://x.com/nli24_" },
   { label: "github.com/qiz-li", href: "https://github.com/qiz-li" },
   { label: "linkedin.com/in/li24", href: "https://www.linkedin.com/in/li24/" },

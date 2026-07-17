@@ -141,7 +141,7 @@ const experiences: Experience[] = [
         ".",
       ],
       [
-        "Lived in beautiful Oakville, Ontario and learned to ",
+        "Lived in a beautiful apartment and learned to ",
         { text: "cook", image: cook },
         ".",
       ],
