@@ -7,6 +7,9 @@ frontend:
         - npm ci
     build:
       commands:
+        # Console env vars aren't exposed to the SSR runtime by default; write
+        # the FILE_* ones into .env.production so the compute can read them.
+        - env | grep -e '^FILE_' >> .env.production
         - npm run build
   artifacts:
     baseDirectory: .next
