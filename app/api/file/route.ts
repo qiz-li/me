@@ -1,27 +1,17 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { notFound, redirect } from "next/navigation";
 
+// Streams a private S3 object inline. Not reachable directly — proxy.ts blocks
+// external requests to this path and only rewrites the configured slug here, so
+// the object's location never leaves the server and the browser URL is unchanged.
 export const dynamic = "force-dynamic";
 
-const EXPIRES_IN = 300; // 5 minutes
-
-export default async function FilePage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-
-  const expected = process.env.FILE_SLUG;
+export async function GET() {
   const bucket = process.env.FILE_S3_BUCKET;
   const key = process.env.FILE_S3_KEY;
   const region = process.env.FILE_S3_REGION;
 
-  // Wrong slug (or missing config) renders the normal 404 — indistinguishable
-  // from any other unknown path.
-  if (!expected || slug !== expected || !bucket || !key || !region) {
-    notFound();
+  if (!bucket || !key || !region) {
+    return new Response("Not configured", { status: 500 });
   }
 
   // In production the SDK picks up temporary credentials from the compute
@@ -35,20 +25,23 @@ export default async function FilePage({
       : {}),
   });
 
+  const obj = await client.send(
+    new GetObjectCommand({ Bucket: bucket, Key: key }),
+  );
+  if (!obj.Body) {
+    return new Response("Not Found", { status: 404 });
+  }
+
   const downloadName = process.env.FILE_DOWNLOAD_NAME;
-  const url = await getSignedUrl(
-    client,
-    new GetObjectCommand({
-      Bucket: bucket,
-      Key: key,
+  return new Response(obj.Body.transformToWebStream(), {
+    headers: {
+      "Content-Type": "application/pdf",
       // Open in the browser rather than force a download.
-      ResponseContentDisposition: downloadName
+      "Content-Disposition": downloadName
         ? `inline; filename="${downloadName}"`
         : "inline",
-      ResponseContentType: "application/pdf",
-    }),
-    { expiresIn: EXPIRES_IN },
-  );
-
-  redirect(url);
+      "Cache-Control": "no-store",
+      "X-Robots-Tag": "noindex",
+    },
+  });
 }
