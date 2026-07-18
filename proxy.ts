@@ -27,6 +27,10 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Run on everything except static assets (so /api/file stays covered).
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  // Only extensionless, non-root paths can be the slug (FILE_SLUG contains no
+  // dot), so exclude the homepage and any path with a file extension: on
+  // Amplify a matched route is served through the compute Lambda, and this
+  // keeps static pages/assets on the CDN. /api/file has no dot and stays
+  // covered by the block above.
+  matcher: ["/((?!_next/static|_next/image|.*\\..*|$).*)"],
 };

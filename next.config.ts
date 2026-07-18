@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  images: {
+    // AVIF first for browsers that support it (~30% smaller than WebP for
+    // these photos), WebP as the fallback. Both variants cache immutably.
+    formats: ["image/avif", "image/webp"],
+  },
   async headers() {
     return [
       {
