@@ -79,6 +79,15 @@ function useScramble(text: string) {
   return { display, run, stop };
 }
 
+// Touch browsers synthesize mouseenter/focus on tap but never deliver the
+// matching mouseleave, so anything keyed to hover sticks until another
+// element is tapped. Hover callbacks therefore only run for non-touch
+// pointers; touch taps still get the scramble effect (it ends on its own),
+// and focus only counts when it came from the keyboard.
+const isTouch = (e: React.PointerEvent) => e.pointerType === "touch";
+const isKeyboardFocus = (e: React.FocusEvent) =>
+  e.currentTarget.matches(":focus-visible");
+
 function ScrambleText({
   text,
   display,
@@ -177,9 +186,13 @@ export function ScrambleButton({
     <button
       type="button"
       onClick={onToggle}
-      onMouseEnter={handleEnter}
-      onMouseLeave={handleLeave}
-      onFocus={handleEnter}
+      onPointerEnter={(e) => (isTouch(e) ? run() : handleEnter())}
+      onPointerLeave={(e) => {
+        if (!isTouch(e)) handleLeave();
+      }}
+      onFocus={(e) => {
+        if (isKeyboardFocus(e)) handleEnter();
+      }}
       onBlur={handleLeave}
       aria-expanded={expanded}
       className={`group inline-flex items-center gap-1.5 self-start hover:text-accent-hover transition-colors ${expanded ? "text-accent" : muted ? "text-muted" : ""} ${className}`}
@@ -213,9 +226,13 @@ export function ScrambleInlineLink({
     <a
       href={href}
       {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      onMouseEnter={run}
-      onMouseLeave={stop}
-      onFocus={run}
+      onPointerEnter={() => run()}
+      onPointerLeave={(e) => {
+        if (!isTouch(e)) stop();
+      }}
+      onFocus={(e) => {
+        if (isKeyboardFocus(e)) run();
+      }}
       onBlur={stop}
       className={`group no-underline text-inherit hover:text-accent-hover transition-colors ${plain ? "inline-block" : "inline-flex items-center gap-1.5 mr-1"}`}
     >
@@ -260,9 +277,13 @@ export function ScrambleInline({
     <button
       type="button"
       onClick={onClick}
-      onMouseEnter={handleEnter}
-      onMouseLeave={handleLeave}
-      onFocus={handleEnter}
+      onPointerEnter={(e) => (isTouch(e) ? run() : handleEnter())}
+      onPointerLeave={(e) => {
+        if (!isTouch(e)) handleLeave();
+      }}
+      onFocus={(e) => {
+        if (isKeyboardFocus(e)) handleEnter();
+      }}
       onBlur={handleLeave}
       aria-expanded={active}
       className={`group inline-block hover:text-accent-hover transition-colors ${active ? "text-accent" : ""}`}
