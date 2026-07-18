@@ -198,10 +198,10 @@ export default function Home() {
             <p>
               I care deeply about people, friends, and{" "}
               <ScrambleInline text="community" {...panelToggle("community")} />.
-              My goal is to write a book that brings together millions of people.
+              I&apos;m writing a book that brings together millions of people.
             </p>
             <p>
-              I love{" "}
+              Catch me{" "}
               <ScrambleInline text="travelling" {...panelToggle("travelling")} />
               , as I believe{" "}
               <span className="accent-serif">
