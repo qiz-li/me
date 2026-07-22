@@ -6,13 +6,23 @@ export function useIdle(): boolean {
   const [idle, setIdle] = useState(false);
 
   useEffect(() => {
-    if ("requestIdleCallback" in window) {
-      const id = requestIdleCallback(() => setIdle(true));
-      return () => cancelIdleCallback(id);
+    // Never arm before the load event: mount happens during hydration, while
+    // page images are still in flight, and prefetched clips share their h2
+    // connection — Safari's prioritization lets the clips starve the images
+    // for many seconds (requestIdleCallback can also go idle mid-download).
+    let cancel = () => {};
+    const arm = () => {
+      // A beat past load, so the handoff isn't racing load's own tail.
+      const t = setTimeout(() => setIdle(true), 300);
+      cancel = () => clearTimeout(t);
+    };
+    if (document.readyState === "complete") {
+      arm();
+    } else {
+      addEventListener("load", arm, { once: true });
+      cancel = () => removeEventListener("load", arm);
     }
-    // Safari has no requestIdleCallback; a beat after load is close enough.
-    const t = setTimeout(() => setIdle(true), 300);
-    return () => clearTimeout(t);
+    return () => cancel();
   }, []);
 
   return idle;
