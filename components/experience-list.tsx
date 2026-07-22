@@ -40,6 +40,11 @@ type DescriptionSegment =
 // black/white fills (simcard0000/se-webring, assets/logo); the path is theirs,
 // the viewBox is tightened to the glyph so it sits on the text baseline
 // without the artwork's built-in padding.
+//
+// The header row is min(viewport - 48px of page padding, 440px) wide, so it
+// only reaches its designed 440px from 488px up. Narrower than that — phones —
+// "University of Waterloo, Software Engineering" and the date crowd each other
+// and the mark is what tips the row into wrapping, so it drops out entirely.
 function WebringMark() {
   return (
     <svg
@@ -48,7 +53,7 @@ function WebringMark() {
       viewBox="91 210 778 540"
       fill="currentColor"
       aria-hidden="true"
-      className="inline-block align-baseline ml-1 translate-y-[0.5px]"
+      className="hidden min-[488px]:inline-block align-baseline ml-1 translate-y-[0.5px]"
     >
       <path
         fillRule="evenodd"
