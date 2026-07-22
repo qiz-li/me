@@ -46,6 +46,10 @@ export async function POST(request: Request) {
         p: String(item.p ?? "").slice(0, 120),
         s: num(item.s),
         d: num(item.d),
+        // Wait (start → first byte) vs download (first byte → done): -1 when
+        // the browser withholds responseStart.
+        w: item.w === -1 ? -1 : num(item.w),
+        dl: item.dl === -1 ? -1 : num(item.dl),
         pr: String(item.pr ?? "").slice(0, 20),
         b: num(item.b),
       };
