@@ -89,10 +89,11 @@ export default function RootLayout({
         {/* Navigation-timing beacon → /api/rum → CloudWatch. Fires once after
             load (setTimeout so loadEventEnd is populated); sendBeacon survives
             the user navigating away. Inert until the load event, so it costs
-            nothing before first paint. */}
+            nothing before first paint. Loads over 3s also attach the five
+            slowest subresources so the stall can be attributed. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){if(!navigator.sendBeacon)return;addEventListener("load",function(){setTimeout(function(){try{var n=performance.getEntriesByType("navigation")[0];if(!n)return;var r=function(x){return Math.max(0,Math.round(x))};navigator.sendBeacon("/api/rum",JSON.stringify({dns:r(n.domainLookupEnd-n.domainLookupStart),tcp:r(n.connectEnd-n.connectStart),tls:n.secureConnectionStart?r(n.connectEnd-n.secureConnectionStart):0,ttfb:r(n.responseStart-n.startTime),dcl:r(n.domContentLoadedEventEnd-n.startTime),load:r(n.loadEventEnd-n.startTime),transfer:r(n.transferSize||0),proto:n.nextHopProtocol||"",type:n.type||"",path:location.pathname,ua:navigator.userAgent}))}catch(e){}},0)})})()`,
+            __html: `(function(){if(!navigator.sendBeacon)return;addEventListener("load",function(){setTimeout(function(){try{var n=performance.getEntriesByType("navigation")[0];if(!n)return;var r=function(x){return Math.max(0,Math.round(x))};var o={dns:r(n.domainLookupEnd-n.domainLookupStart),tcp:r(n.connectEnd-n.connectStart),tls:n.secureConnectionStart?r(n.connectEnd-n.secureConnectionStart):0,ttfb:r(n.responseStart-n.startTime),dcl:r(n.domContentLoadedEventEnd-n.startTime),load:r(n.loadEventEnd-n.startTime),transfer:r(n.transferSize||0),proto:n.nextHopProtocol||"",type:n.type||"",path:location.pathname,ua:navigator.userAgent};if(o.load>3000){o.slow=performance.getEntriesByType("resource").slice().sort(function(a,b){return b.duration-a.duration}).slice(0,5).map(function(e){return{p:e.name.replace(location.origin,"").slice(0,100),s:r(e.startTime),d:r(e.duration),pr:e.nextHopProtocol||"",b:r(e.transferSize||0)}})}navigator.sendBeacon("/api/rum",JSON.stringify(o))}catch(e){}},0)})})()`,
           }}
         />
       </head>
