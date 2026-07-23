@@ -19,6 +19,10 @@ const nextConfig: NextConfig = {
     // AVIF first for browsers that support it (~30% smaller than WebP for
     // these photos), WebP as the fallback. Both variants cache immutably.
     formats: ["image/avif", "image/webp"],
+    // Photos render at ≤440 CSS px, so the 2x variants browsers fetch are
+    // downscaled on screen and q=60 is visually identical to q=75 there.
+    // 75 stays allowed so cached HTML with q=75 URLs keeps resolving.
+    qualities: [60, 75],
   },
   async headers() {
     return [

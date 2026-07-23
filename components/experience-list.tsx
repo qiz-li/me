@@ -204,6 +204,7 @@ function ExperienceMedia({
       src={media}
       alt={alt}
       placeholder="blur"
+      quality={60}
       sizes="(min-width: 1024px) 420px, 440px"
       preload={preload}
       {...(preload ? {} : { loading: "eager", fetchPriority: "low" })}
@@ -253,6 +254,8 @@ function PrefetchDescriptionMedia() {
               alt=""
               loading="eager"
               fetchPriority="low"
+              // Must match the visible media's quality or this warms the wrong URL.
+              quality={60}
               sizes="(min-width: 1024px) 420px, 440px"
             />
           );

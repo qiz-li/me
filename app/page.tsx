@@ -85,6 +85,7 @@ function PanelMedia({ panel }: { panel: PanelContent }) {
       src={panel.image}
       alt={panel.alt}
       placeholder="blur"
+      quality={60}
       sizes={portrait ? "240px" : "280px"}
       className={portrait ? PORTRAIT_PANEL : LANDSCAPE_PANEL}
     />
@@ -123,6 +124,8 @@ function PrefetchPanelMedia() {
             alt=""
             loading="eager"
             fetchPriority="low"
+            // Must match the visible panel's quality or this warms the wrong URL.
+            quality={60}
             sizes={panel.image.height > panel.image.width ? "240px" : "280px"}
           />
         ),
