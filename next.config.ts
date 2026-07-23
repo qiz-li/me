@@ -1,6 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // The one Tailwind stylesheet is a second hop on the critical path: the
+  // browser can't discover it until the HTML is parsed, so it blocks first
+  // paint for ~140ms on a cold cache. It's small and atomic, so ship it in a
+  // <style> tag with the HTML rather than as a <link>. Production only — dev
+  // still links. Costs repeat visitors the bytes on every document; worth it
+  // for a single-route site with no cross-page cache to give up.
+  experimental: {
+    inlineCss: true,
+  },
   // A stray lockfile in the home directory makes Next.js infer the wrong
   // workspace root without this.
   turbopack: {
